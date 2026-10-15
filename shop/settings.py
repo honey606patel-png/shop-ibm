@@ -35,7 +35,9 @@ SECRET_KEY = 'django-insecure-s4k0b5rucagbml70%bkey(*ht@t5w#h@8d494tao_727hj%q0v
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
+# shop/settings.py
+
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
 
 
