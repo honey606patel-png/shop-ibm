@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Customer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h4 class="fw-bold mb-0 text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Confirm Deletion</h4>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-4">Are you sure you want to delete <strong>{{ customer.first_name }} {{ customer.last_name }}</strong>? This action cannot be undone and will remove all associated order history.</p>
+
+                <form method="post" class="d-flex justify-content-between align-items-center">
+                    {% csrf_token %}
+                    <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-danger px-4 fw-semibold">Yes, Delete Customer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

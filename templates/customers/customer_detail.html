@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ customer.first_name }} {{ customer.last_name }} - Details{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'customer_list' %}" class="text-decoration-none text-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Directory
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Customer Profile Summary -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; font-size: 24px;">
+                    {{ customer.first_name|first }}{{ customer.last_name|first }}
+                </div>
+                <h4 class="fw-bold mb-1">{{ customer.first_name }} {{ customer.last_name }}</h4>
+                <p class="text-muted mb-1 small"><i class="bi bi-envelope me-1"></i> {{ customer.email }}</p>
+                <p class="text-muted mb-3 small"><i class="bi bi-telephone me-1"></i> {{ customer.phone_number|default:"No phone provided" }}</p>
+                <span class="badge bg-light text-dark border">
+                    <i class="bi bi-calendar3 me-1"></i> Joined {{ customer.created_at|date:"M d, Y" }}
+                </span>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 bg-success bg-gradient text-white">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-white-50 text-uppercase small fw-bold d-block">Total Lifetime Spent</span>
+                        <h2 class="fw-bold mb-0">${{ total_spent }}</h2>
+                    </div>
+                    <i class="bi bi-cash-stack display-5 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders & Inline Order Creation -->
+    <div class="col-md-8">
+        <!-- Add Order Form -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-cart-plus me-2 text-success"></i>Add New Order</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" class="row g-3">
+                    {% csrf_token %}
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold">Product Name</label>
+                        <input type="text" name="product_name" class="form-control" required placeholder="e.g. Wireless Mouse">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold">Amount ($)</label>
+                        <input type="number" step="0.01" name="amount" class="form-control" required placeholder="29.99">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="Pending">Pending</option>
+                            <option value="Completed" selected>Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-success px-4 fw-semibold">
+                            <i class="bi bi-check-circle me-1"></i> Add Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order History Table -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-clock-history me-2 text-primary"></i>Order History</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Product</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="fw-bold text-muted">#{{ order.id }}</td>
+                                <td class="fw-semibold">{{ order.product_name }}</td>
+                                <td>${{ order.amount }}</td>
+                                <td>
+                                    {% if order.status == 'Completed' %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">Completed</span>
+                                    {% elif order.status == 'Pending' %}
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Pending</span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Cancelled</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted small">{{ order.order_date|date:"M d, Y H:i" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    No orders placed yet for this customer.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
