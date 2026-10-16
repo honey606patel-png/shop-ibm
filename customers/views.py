@@ -4,6 +4,8 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from .models import Customer, Order
 from .forms import CustomerForm, OrderForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 
 @login_required
 def customer_list(request):
@@ -88,3 +90,14 @@ def customer_delete(request, pk):
         customer.delete()
         return redirect('customer_list')
     return render(request, 'customers/customer_confirm_delete.html', {'customer': customer})
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Automatically logs the user in after registration
+            return redirect('customer_list')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/signup.html', {'form': form})
